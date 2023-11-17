@@ -8,5 +8,8 @@
   },
   "engines": {
     "node": "20.x"
+  },
+  "scripts": {
+    "heroku-cleanup": "yarn run playwright install chromium"
   }
 }
