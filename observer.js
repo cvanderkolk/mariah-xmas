@@ -1,43 +1,51 @@
 const { chromium } = require('playwright');
-const { doMCXmas, isMCXmas } = require('./utils');
+const { doMCXmas } = require('./utils');
 
-const url = 'https://www.audacy.com/majic/listen#recently-played'
+const url = 'https://www.audacy.com/majic/listen#recently-played';
 
-async function songChangeListener(oldValue, newValue) {
-    if (isMCXmas(newValue)) { await doMCXmas() };
-    console.log(`${oldValue} -> ${newValue}`);
-};
+async function checkForSong(page) {
+  try {
+    // Wait for the specific element to be present
+    await page.waitForSelector('#main-content > div:nth-child(2) > div:nth-child(2) > div > section > div.css-0 > ul > li:nth-child(1)', { timeout: 5000 });
+
+    // Get the text of the element
+    const nowPlayingText = await page.evaluate(() => {
+      const element = document.querySelector('#main-content > div:nth-child(2) > div:nth-child(2) > div > section > div.css-0 > ul > li:nth-child(1)');
+      return element ? element.textContent.toLowerCase() : '';
+    });
+
+    // Check for the song and artist
+    const hasMariahCarey = nowPlayingText.includes('mariah carey');
+    const hasSongTitle = nowPlayingText.includes('all i want for christmas is you');
+
+    if (hasMariahCarey && hasSongTitle) {
+      await doMCXmas();
+    }
+  } catch (err) {
+    console.error('Error checking for song:', err);
+  }
+}
 
 async function main() {
-try {
+  try {
     const browser = await chromium.launch({
-        headless: false, 
-        args: [
-            "--mute-audio",
-            "--disable-features=site-per-process",
-        ],
-      });
-    const page = await browser.newPage();
-  
-  await page.goto(url);
-
-  // attempt to play live
-  await page.click('#playButton');
-  page.exposeFunction('songChangeListener', songChangeListener);
-
-  await page.evaluate(() => {
-    const target = document.querySelector('#titleArtist');
-    const observer = new MutationObserver((mutationsList) => {
-        for (const mutation of mutationsList) {
-            window.songChangeListener(
-                mutation.removedNodes[0].textContent,
-                mutation.addedNodes[0].textContent,
-            );
-        }
+      headless: false,
+      args: [
+        "--mute-audio",
+        "--disable-features=site-per-process",
+      ],
     });
-    observer.observe(target, { childList: true });
-  });
-} catch (err) { console.error(err)}
+    const page = await browser.newPage();
+    await page.goto(url);
+
+    setInterval(async () => {
+      await page.reload();
+      await checkForSong(page);
+    }, 15000); // Reload every 15 seconds
+
+  } catch (err) {
+    console.error('Error in main function:', err);
+  }
 };
 
-main()
+main();
