@@ -17,10 +17,12 @@ async function checkForSong(page) {
     // Check for the song and artist
     const hasMariahCarey = nowPlayingText.includes('mariah carey');
     const hasSongTitle = nowPlayingText.includes('all i want for christmas is you');
-
+    console.log(`Now Playing: ${nowPlayingText}`)
+    
     if (hasMariahCarey && hasSongTitle) {
       await doMCXmas();
     }
+
   } catch (err) {
     console.error('Error checking for song:', err);
   }
@@ -29,11 +31,8 @@ async function checkForSong(page) {
 async function main() {
   try {
     const browser = await chromium.launch({
-      headless: false,
-      args: [
-        "--mute-audio",
-        "--disable-features=site-per-process",
-      ],
+      headless: true,
+      args: ["--no-sandbox"],
     });
     const page = await browser.newPage();
     await page.goto(url);
