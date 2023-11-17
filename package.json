@@ -10,6 +10,6 @@
     "node": "20.x"
   },
   "scripts": {
-    "heroku-cleanup": "yarn run playwright install chromium"
+    "heroku-cleanup": "npm run playwright install chromium"
   }
 }
