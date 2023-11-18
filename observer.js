@@ -1,4 +1,4 @@
-const { chromium } = require('playwright');
+const { chromium } = require("playwright-chromium");
 const { doMCXmas } = require('./utils');
 
 const url = 'https://www.audacy.com/majic/listen#recently-played';

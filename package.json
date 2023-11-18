@@ -4,12 +4,6 @@
     "dotenv": "^16.3.1",
     "giphy-api": "^2.0.2",
     "node-hue-api": "^5.0.0-beta.9",
-    "playwright": "^1.40.0"
-  },
-  "engines": {
-    "node": "20.x"
-  },
-  "scripts": {
-    "heroku-cleanup": "yarn run playwright install chromium"
+    "playwright-chromium": "^1.40.0"
   }
 }
